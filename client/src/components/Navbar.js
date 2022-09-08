@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { Link, Route, Routes } from 'react-router-dom';
 import { AiFillTag, AiOutlineClose, AiOutlineMenu, AiOutlineSearch } from 'react-icons/ai';
 import { BsFillCartFill, BsFillSaveFill } from 'react-icons/bs';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { MdFavorite, MdHelp } from 'react-icons/md';
 import { FaUserFriends, FaWallet } from 'react-icons/fa';
+
 
 function Navbar() {
 
@@ -58,7 +60,8 @@ const [nav, setNav] = useState(false);
             <nav className='p-4'>
                <ul className='flex flex-col text-gray-800'>
                   <li className='text-xl py-4 flex items-center'>
-                     <TbTruckDelivery size={20} className="mr-2"/>Orders
+                     <TbTruckDelivery size={20} className="mr-2"/>
+                     <Link to='.././pages/orders'>Orders</Link>   
                   </li>
                   <li className='text-xl py-4 flex items-center'>
                      <MdFavorite size={20} className="mr-2"/>Favorites

@@ -102,14 +102,14 @@ const products = [
    {
       id: 13,
       name: 'Saled Cesar',
-      category: 'Saled',
+      category: 'Another',
       image: 'https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=1600',
       price: 55,
    },
    {
       id: 14,
       name: 'Saled Chicken',
-      category: 'Saled',
+      category: 'Another',
       image: 'https://images.pexels.com/photos/2741448/pexels-photo-2741448.jpeg?auto=compress&cs=tinysrgb&w=1600',
       price: 70,
    },

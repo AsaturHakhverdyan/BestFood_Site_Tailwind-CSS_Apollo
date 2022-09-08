@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
+import ProductItem from './ProductItem';
 
-const GET_PRODUCTS = gql`
+ const GET_PRODUCTS = gql`
  query GetProducts {
    products{
       category
@@ -13,51 +14,75 @@ const GET_PRODUCTS = gql`
  }
 `;
 
-const FoodsCategorys = ["All", "Pizza", "Burger", "Another", "Fries"];
-const FoodsPrice = [ 20, 50, 100, 200, "All"];
+const FoodsCategorys = [ "All", "Pizza", "Burger", "Another", "Fries" ];
+const FoodsPrice = [ 20, 50, 100, 200, 300, "All" ];
 
 function Food() {
    
    const { loading, data, error } = useQuery(GET_PRODUCTS);
-   const [Foods, setFoods] = useState(data);
+   const [ Foods, setFoods ] = useState(data);
+   const [ arrayDataItem, setArrayDataItem ] = useState([]);
+   const [ arrayDataPrice, setArrayDataPrice ] = useState([]);
    
    useEffect(() => {
       if(data?.products){
          setFoods(data.products);
-      }
+      };
    },[data?.products]);
-
+   
    if(loading){
       return <p>Loading...</p>;
    };
    if(error){
-      return <p>Somting wnet wrong<span className='font-bold'>: - {error.message}</span></p>;
+      return <p>Somting wnet wrong<span className='font-bold'>: {error.message}</span></p>;
    };
-
-   const filterFoods = (category) => {
-      if(category === "All" || category === undefined){
-         setFoods(data.products)
-      }else {
-         setFoods(data.products.filter((item) => item.category === category));
+ 
+   const filterNameFoods = (category) => {
+      const correctData = !arrayDataItem.includes(category) ? [...arrayDataItem,category] : [];   
+      setArrayDataItem(correctData)
+   
+      if(category === "All" || category === undefined || correctData.length === 0 ){
+         setArrayDataItem([]);
+         setFoods(data.products);
+         return arrayDataItem;
+      }
+      else {
+         const res = data.products.filter(({category}) => correctData.includes(category));
+         return setFoods(res);
       }
    };
-   const filterPriceFoods = (price) => {
-      switch (price) {
-         case 20:
-           return setFoods(data.products.filter((item) => item.price >= 5 && item.price <= 20));
-         case  50:
-            return setFoods(data.products.filter((item) => item.price >= 20 && item.price <= 50));
-         case 100:
-           return setFoods(data.products.filter((item) => item.price >= 50 && item.price <= 100));
-         case  200:
-            return setFoods(data.products.filter((item) => item.price >= 100 && item.price <= 250));
-         case "All":
-            setFoods(data.products);
-         break;
-         default:
-            setFoods(data.products);
-      };
+
+   const filterPriceFoods = (priceItem) => {
+      const correctData = !arrayDataPrice.includes(priceItem) ? [...arrayDataPrice, priceItem] : [];   
+      setArrayDataPrice(correctData)
+   
+      if(priceItem === "All" || priceItem === undefined || correctData.length === 0 ){
+         setArrayDataItem([]);
+         setFoods(data.products);
+         return arrayDataPrice;
+      }
+      else {
+         return setFoods(data.products.filter((elem) => elem.price < priceItem));
+      }
    };
+
+   // const filterPriceFoods = (price) => {
+   //    switch (price) {
+   //       case 20:
+   //         return setFoods(data.products.filter((item) => item.price >= 5 && item.price <= 20));
+   //       case  50:
+   //          return setFoods(data.products.filter((item) => item.price >= 20 && item.price <= 50));
+   //       case 100:
+   //         return setFoods(data.products.filter((item) => item.price >= 50 && item.price <= 100));
+   //       case  200:
+   //          return setFoods(data.products.filter((item) => item.price >= 100 && item.price <= 250));
+   //       case "All":
+   //          setFoods(data.products);
+   //       break;
+   //       default:
+   //          setFoods(data.products);
+   //    };
+   // };
 
   return (
     <div className='max-w-[1640px] mx-auto px-4 py-7'>
@@ -71,8 +96,8 @@ function Food() {
                {FoodsCategorys.map((item, index) =>
                   <button 
                      key={index} 
-                     onClick={() => filterFoods(item)} 
-                     className='mr-2 font-semibold text-orange-600 border-orange-600 hover:bg-orange-600 hover:text-white hover:border-white duration-300'>{item}
+                     onClick={() => filterNameFoods(item)} 
+                     className={!arrayDataItem.includes(item) ? 'mr-2 font-semibold text-orange-600 border-orange-600 hover:bg-orange-600 hover:text-white hover:border-white duration-300': 'bg-orange-600 text-white mr-2'}>{item}
                   </button>
                )}
             </div>
@@ -88,8 +113,7 @@ function Food() {
                      <button
                       key={index}
                       onClick={() => filterPriceFoods(item)}
-                      className='mr-2 font-semibold text-orange-600 border-orange-600 hover:bg-orange-600 hover:text-white hover:border-white duration-300'
-                      >
+                      className='mr-2 font-semibold text-orange-600 border-orange-600 hover:bg-orange-600 hover:text-white hover:border-white duration-300'>
                         {item}
                      </button>
                    )
@@ -99,7 +123,7 @@ function Food() {
                      onClick={() => filterPriceFoods(item)}
                      key={index} 
                      className='mr-2 font-semibold text-orange-600 border-orange-600 hover:bg-orange-600 hover:text-white hover:border-white duration-300'>
-                     Around: {item}$
+                     Up To: {item}$
                   </button>
                   }
                })}
@@ -107,25 +131,9 @@ function Food() {
          </div>
       </div>
       <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 py-12">
-         {Foods?.map(({id, name, price, image}) => 
-         <div key={id} className='border shadow-lg rounded-lg hover:scale-105 duration-200'>
-            <div>
-               <img
-                  className='w-full h-[200px] object-cover rounded-t-lg' 
-                  src={image} alt="/" 
-               />
-               <div className=' rounded-b-lg flex justify-between items-center'>
-                 <div className='py-1 px-4'>
-                     <p className='font-bold'>{name}</p>
-                     <p className='text-gray-500'>Price: <span className='text-black font-bold'>{price}$</span></p>
-                 </div>
-                 <div className='mr-4'>
-                     <button className='text-orange-600 border-orange-600 hover:bg-orange-600 hover:text-white hover:border-white duration-200'>Buy Now</button>
-                 </div>
-               </div>
-            </div>
-         </div>
-         )};
+         {Foods?.map((item, index) => 
+            <ProductItem key={index} item={item}/>
+         )}
       </div>
     </div>
   );

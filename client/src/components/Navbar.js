@@ -7,6 +7,7 @@ import { TbTruckDelivery } from 'react-icons/tb';
 import { MdFavorite, MdHelp } from 'react-icons/md';
 import { FaUserFriends, FaWallet } from 'react-icons/fa';
 
+
 function Navbar() {
    const [openCarddiv, setOpenCarddiv] = useState(false)
    const [nav, setNav] = useState(false);
